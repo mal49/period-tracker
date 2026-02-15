@@ -35,7 +35,6 @@ function App() {
   const [entries, setEntries] = useLocalStorage<CycleEntry[]>('wawa-entries', []);
   const [settings, setSettings] = useLocalStorage<UserSettings>('wawa-settings', DEFAULT_SETTINGS);
   const [hasOnboarded, setHasOnboarded] = useLocalStorage<boolean>('wawa-onboarded', false);
-  const [installPromptDismissed, setInstallPromptDismissed] = useLocalStorage<boolean>('wawa-install-dismissed', false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [showLogPeriod, setShowLogPeriod] = useState(false);
@@ -114,11 +113,7 @@ function App() {
       setEntries(prev => [...prev, firstEntry]);
     }
     setHasOnboarded(true);
-    // Show install prompt after onboarding if not previously dismissed
-    if (!installPromptDismissed) {
-      setShowInstallPrompt(true);
-    }
-  }, [setSettings, setEntries, setHasOnboarded, installPromptDismissed]);
+  }, [setSettings, setEntries, setHasOnboarded]);
 
   const handleDayClick = useCallback((date: Date) => {
     const dayData = cycle.getDayData(date);
@@ -252,10 +247,7 @@ function App() {
       {/* Install PWA Prompt */}
       <InstallPrompt
         isOpen={showInstallPrompt}
-        onClose={() => {
-          setShowInstallPrompt(false);
-          setInstallPromptDismissed(true);
-        }}
+        onClose={() => setShowInstallPrompt(false)}
       />
     </div>
   );
