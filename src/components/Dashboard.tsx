@@ -177,10 +177,10 @@ function CycleProgressWheel({
         {segments.map((seg, i) => {
           const startAngle = (seg.startDay / totalDays) * 360;
           const endAngle = (seg.endDay / totalDays) * 360;
-          // Add tiny gap between segments
-          const gapAngle = 1.5;
-          const adjustedStart = startAngle + (i === 0 ? 0 : gapAngle / 2);
-          const adjustedEnd = endAngle - (i === segments.length - 1 ? 0 : gapAngle / 2);
+          // Add gap between all segments (including wrap-around between luteal → menstrual)
+          const gapAngle = 2.5;
+          const adjustedStart = startAngle + gapAngle / 2;
+          const adjustedEnd = endAngle - gapAngle / 2;
 
           return (
             <motion.path

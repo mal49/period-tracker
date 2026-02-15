@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Bell, Moon, Sun, Trash2, Download, Upload, Info, Heart } from 'lucide-react';
+import { Bell, Moon, Sun, Trash2, Download, Upload, Info, Heart, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserSettings, CycleEntry } from '@/types';
 import { useState, useRef } from 'react';
@@ -92,6 +92,25 @@ export function Settings({
       animate="show"
       className="space-y-4"
     >
+      {/* Profile */}
+      <motion.div variants={itemVariants} className="bg-card rounded-2xl p-4 space-y-3 card-soft">
+        <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
+          <User className="size-4 text-primary" />
+          Profile
+        </h3>
+        <div className="flex items-center gap-3">
+          <label className="text-sm font-medium text-muted-foreground shrink-0">Name</label>
+          <input
+            type="text"
+            value={settings.userName || ''}
+            onChange={(e) => onUpdateSettings({ ...settings, userName: e.target.value })}
+            placeholder="Your name"
+            maxLength={20}
+            className="flex-1 rounded-xl border bg-background px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+          />
+        </div>
+      </motion.div>
+
       {/* Cycle Settings */}
       <motion.div variants={itemVariants} className="bg-card rounded-2xl p-4 space-y-4 card-soft">
         <h3 className="text-sm font-bold text-foreground flex items-center gap-1.5">
@@ -186,7 +205,7 @@ export function Settings({
 
         <div className="flex items-center gap-2 p-3 rounded-xl bg-[var(--mint)] dark:bg-accent text-xs font-medium text-foreground/70">
           <Info className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span>All data is stored locally on your device. Nothing is sent to any server.</span>
+          <span>All cycle data is stored locally on your device. If notifications are enabled, only a reminder date is sent to the server — no health data ever leaves your device.</span>
         </div>
 
         <div className="flex gap-2">

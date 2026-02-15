@@ -11,6 +11,7 @@ export interface CycleEntry {
   }
   
   export interface UserSettings {
+    userName?: string;
     averageCycleLength: number;
     averagePeriodLength: number;
     notificationsEnabled: boolean;

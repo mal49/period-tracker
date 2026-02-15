@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format, subDays } from 'date-fns';
+import { format, subDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameDay, isSameMonth, isAfter } from 'date-fns';
 import {
   ArrowRight,
   ArrowLeft,
@@ -9,6 +9,10 @@ import {
   Shield,
   Sparkles,
   Check,
+  User,
+  ChevronLeft,
+  ChevronRight,
+  Calendar,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserSettings, CycleEntry } from '@/types';
@@ -19,13 +23,14 @@ interface OnboardingProps {
   onComplete: (settings: UserSettings, firstEntry?: CycleEntry) => void;
 }
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 export function Onboarding({ onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
 
   // Settings
+  const [userName, setUserName] = useState('');
   const [cycleLength, setCycleLength] = useState(28);
   const [periodLength, setPeriodLength] = useState(5);
 
@@ -47,6 +52,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
 
   const handleFinish = () => {
     const settings: UserSettings = {
+      userName: userName.trim() || undefined,
       averageCycleLength: cycleLength,
       averagePeriodLength: periodLength,
       notificationsEnabled: false,
@@ -131,15 +137,18 @@ export function Onboarding({ onComplete }: OnboardingProps) {
           >
             {step === 0 && <StepWelcome />}
             {step === 1 && (
-              <StepCycleLength value={cycleLength} onChange={setCycleLength} />
+              <StepName value={userName} onChange={setUserName} />
             )}
             {step === 2 && (
+              <StepCycleLength value={cycleLength} onChange={setCycleLength} />
+            )}
+            {step === 3 && (
               <StepPeriodLength
                 value={periodLength}
                 onChange={setPeriodLength}
               />
             )}
-            {step === 3 && (
+            {step === 4 && (
               <StepLastPeriod
                 enabled={logLastPeriod}
                 onToggle={setLogLastPeriod}
@@ -147,7 +156,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
                 onDateChange={setLastPeriodStart}
               />
             )}
-            {step === 4 && <StepAllSet />}
+            {step === 5 && <StepAllSet userName={userName} />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -242,6 +251,51 @@ function StepWelcome() {
           </motion.div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function StepName({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="text-center max-w-xs mx-auto">
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+      >
+        <Mascot size="lg" mood="excited" className="mx-auto mb-4" />
+      </motion.div>
+      <h2 className="text-xl font-extrabold text-foreground mb-1">
+        What's your name?
+      </h2>
+      <p className="text-sm text-muted-foreground mb-8 font-medium">
+        So Wawa can greet you properly~
+      </p>
+
+      <div className="relative max-w-[260px] mx-auto">
+        <div className="absolute left-4 top-1/2 -translate-y-1/2">
+          <User className="size-5 text-muted-foreground/50" />
+        </div>
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Enter your name"
+          maxLength={20}
+          className="w-full rounded-2xl border-2 border-border bg-card px-4 py-3.5 pl-12 text-center text-lg font-bold text-foreground placeholder:text-muted-foreground/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+          autoFocus
+        />
+      </div>
+
+      <p className="text-xs text-muted-foreground mt-4 font-medium">
+        You can skip this if you prefer — just tap Continue!
+      </p>
     </div>
   );
 }
@@ -367,15 +421,11 @@ function StepLastPeriod({
             className="overflow-hidden"
           >
             <div className="mt-4 rounded-2xl bg-card card-soft p-4">
-              <label className="text-xs font-bold text-muted-foreground mb-2 block text-left uppercase tracking-wider">
-                Start date of last period
-              </label>
-              <input
-                type="date"
+              <OnboardingDatePicker
+                label="Start date of last period"
                 value={date}
-                onChange={(e) => onDateChange(e.target.value)}
-                max={format(new Date(), 'yyyy-MM-dd')}
-                className="w-full rounded-xl border bg-background px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+                onChange={onDateChange}
+                maxDate={new Date()}
               />
             </div>
           </motion.div>
@@ -391,7 +441,8 @@ function StepLastPeriod({
   );
 }
 
-function StepAllSet() {
+function StepAllSet({ userName }: { userName: string }) {
+  const displayName = userName.trim();
   return (
     <div className="text-center max-w-xs mx-auto">
       <motion.div
@@ -407,7 +458,7 @@ function StepAllSet() {
         transition={{ delay: 0.3 }}
         className="text-2xl font-extrabold text-foreground mb-2"
       >
-        You're All Set!
+        {displayName ? `You're All Set, ${displayName}!` : "You're All Set!"}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0, y: 10 }}
@@ -446,6 +497,159 @@ function StepAllSet() {
 }
 
 /* ─── Shared Components ──────────────────────────────────────── */
+
+function OnboardingMiniCalendar({
+  selected,
+  onSelect,
+  onClose,
+  maxDate,
+}: {
+  selected: Date;
+  onSelect: (date: Date) => void;
+  onClose: () => void;
+  maxDate?: Date;
+}) {
+  const [viewMonth, setViewMonth] = useState(startOfMonth(selected));
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [onClose]);
+
+  const monthStart = startOfMonth(viewMonth);
+  const monthEnd = endOfMonth(viewMonth);
+  const calStart = startOfWeek(monthStart, { weekStartsOn: 1 });
+  const calEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+
+  const days: Date[] = [];
+  let day = calStart;
+  while (day <= calEnd) {
+    days.push(day);
+    day = addDays(day, 1);
+  }
+
+  const weekDays = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: -8, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -8, scale: 0.95 }}
+      transition={{ duration: 0.15 }}
+      className="absolute left-0 right-0 top-full mt-2 z-50 bg-card border rounded-2xl shadow-xl shadow-black/10 p-3"
+    >
+      {/* Month navigation */}
+      <div className="flex items-center justify-between mb-2">
+        <button
+          onClick={() => setViewMonth(subMonths(viewMonth, 1))}
+          className="size-7 rounded-lg hover:bg-accent flex items-center justify-center transition-colors"
+        >
+          <ChevronLeft className="size-4 text-muted-foreground" />
+        </button>
+        <span className="text-sm font-bold text-foreground">
+          {format(viewMonth, 'MMMM yyyy')}
+        </span>
+        <button
+          onClick={() => setViewMonth(addMonths(viewMonth, 1))}
+          className="size-7 rounded-lg hover:bg-accent flex items-center justify-center transition-colors"
+        >
+          <ChevronRight className="size-4 text-muted-foreground" />
+        </button>
+      </div>
+
+      {/* Weekday headers */}
+      <div className="grid grid-cols-7 mb-1">
+        {weekDays.map((wd) => (
+          <div key={wd} className="text-center text-[10px] font-bold text-muted-foreground/60 py-1">
+            {wd}
+          </div>
+        ))}
+      </div>
+
+      {/* Day grid */}
+      <div className="grid grid-cols-7">
+        {days.map((d, i) => {
+          const isCurrentMonth = isSameMonth(d, viewMonth);
+          const isSelected = isSameDay(d, selected);
+          const isToday = isSameDay(d, new Date());
+          const isFuture = maxDate ? isAfter(d, maxDate) : false;
+
+          return (
+            <button
+              key={i}
+              disabled={isFuture}
+              onClick={() => {
+                onSelect(d);
+                onClose();
+              }}
+              className={`size-8 rounded-lg text-xs font-semibold transition-all flex items-center justify-center
+                ${!isCurrentMonth ? 'text-muted-foreground/25' : ''}
+                ${isCurrentMonth && !isSelected && !isFuture ? 'text-foreground hover:bg-accent' : ''}
+                ${isSelected ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20' : ''}
+                ${isToday && !isSelected ? 'ring-1 ring-primary/40' : ''}
+                ${isFuture ? 'text-muted-foreground/20 cursor-not-allowed' : ''}
+              `}
+            >
+              {format(d, 'd')}
+            </button>
+          );
+        })}
+      </div>
+    </motion.div>
+  );
+}
+
+function OnboardingDatePicker({
+  label,
+  value,
+  onChange,
+  maxDate,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  maxDate?: Date;
+}) {
+  const [open, setOpen] = useState(false);
+  const selectedDate = new Date(value + 'T00:00:00');
+
+  return (
+    <div className="relative">
+      <label className="text-xs font-bold text-muted-foreground mb-1.5 block text-left uppercase tracking-wider">
+        {label}
+      </label>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full flex items-center justify-between rounded-xl border bg-background px-4 py-3 text-sm font-medium transition-all
+          ${open ? 'ring-2 ring-primary/50 border-primary' : 'hover:border-primary/30'}
+        `}
+      >
+        <span className="text-foreground">{format(selectedDate, 'MMM d, yyyy')}</span>
+        <Calendar className="size-4 text-muted-foreground" />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <OnboardingMiniCalendar
+            selected={selectedDate}
+            onSelect={(d) => onChange(format(d, 'yyyy-MM-dd'))}
+            onClose={() => setOpen(false)}
+            maxDate={maxDate}
+          />
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 function NumberStepper({
   value,

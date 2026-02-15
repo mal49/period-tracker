@@ -49,26 +49,29 @@ function App() {
     }
   }, []);
 
-  // Schedule period reminder notification
+  // Schedule period reminder notification via push server
   useEffect(() => {
     if (
       settings.notificationsEnabled &&
       notifications.permission === 'granted' &&
+      notifications.pushSubscription &&
       cycle.nextPeriodDate
     ) {
       const reminderDate = new Date(cycle.nextPeriodDate);
       reminderDate.setDate(reminderDate.getDate() - settings.reminderDaysBefore);
 
-      notifications.scheduleNotification(
-        'Period Coming Soon',
-        reminderDate,
-        {
-          body: `Your period is expected in ${settings.reminderDaysBefore} days. Take care!`,
-          tag: 'period-reminder',
-        }
-      );
+      // Only schedule if the reminder date is in the future
+      if (reminderDate.getTime() > Date.now()) {
+        notifications.scheduleNotification(
+          'Period Coming Soon',
+          reminderDate,
+          {
+            body: `Your period is expected in ${settings.reminderDaysBefore} days. Take care!`,
+          }
+        );
+      }
     }
-  }, [cycle.nextPeriodDate, settings, notifications]);
+  }, [cycle.nextPeriodDate, settings.notificationsEnabled, settings.reminderDaysBefore, notifications]);
 
   const handleSaveEntry = useCallback((entry: CycleEntry) => {
     setEntries(prev => {
@@ -150,7 +153,9 @@ function App() {
           <div className="flex items-center gap-2.5">
             <Mascot size="sm" mood="happy" animate={false} />
             <div>
-              <h1 className="text-lg font-extrabold text-foreground leading-tight">Wawa</h1>
+              <h1 className="text-lg font-extrabold text-foreground leading-tight">
+                {settings.userName ? `Welcome, ${settings.userName}` : 'Wawa'}
+              </h1>
               <p className="text-[10px] font-semibold text-muted-foreground -mt-0.5">{PAGE_TITLES[currentPage]}</p>
             </div>
           </div>
