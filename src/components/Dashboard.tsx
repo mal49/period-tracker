@@ -160,7 +160,7 @@ function CycleProgressWheel({
   });
 
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
         {/* Background ring — very subtle */}
         <circle
@@ -237,21 +237,23 @@ function CycleProgressWheel({
             />
           </motion.g>
         )}
-
-        {/* Phase emoji markers around the ring */}
-        {phaseLabels.map((label) => (
-          <text
-            key={label.phase}
-            x={label.x}
-            y={label.y}
-            textAnchor="middle"
-            dominantBaseline="central"
-            fontSize="14"
-          >
-            {label.emoji}
-          </text>
-        ))}
       </svg>
+
+      {/* Phase emoji markers — rendered as HTML for proper emoji support */}
+      {phaseLabels.map((label) => (
+        <span
+          key={label.phase}
+          className="absolute pointer-events-none select-none leading-none"
+          style={{
+            left: label.x,
+            top: label.y,
+            fontSize: '14px',
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          {label.emoji}
+        </span>
+      ))}
 
       {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
