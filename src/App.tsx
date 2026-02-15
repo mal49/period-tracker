@@ -12,6 +12,7 @@ import { Settings } from '@/components/Settings';
 import { BottomNav } from '@/components/BottomNav';
 import { Onboarding } from '@/components/Onboarding';
 import { Mascot } from '@/components/Mascot';
+import { InstallPrompt } from '@/components/InstallPrompt';
 import type { Page } from '@/components/BottomNav';
 import './App.css';
 
@@ -34,6 +35,8 @@ function App() {
   const [entries, setEntries] = useLocalStorage<CycleEntry[]>('wawa-entries', []);
   const [settings, setSettings] = useLocalStorage<UserSettings>('wawa-settings', DEFAULT_SETTINGS);
   const [hasOnboarded, setHasOnboarded] = useLocalStorage<boolean>('wawa-onboarded', false);
+  const [installPromptDismissed, setInstallPromptDismissed] = useLocalStorage<boolean>('wawa-install-dismissed', false);
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [showLogPeriod, setShowLogPeriod] = useState(false);
   const [editingEntry, setEditingEntry] = useState<CycleEntry | null>(null);
@@ -111,7 +114,11 @@ function App() {
       setEntries(prev => [...prev, firstEntry]);
     }
     setHasOnboarded(true);
-  }, [setSettings, setEntries, setHasOnboarded]);
+    // Show install prompt after onboarding if not previously dismissed
+    if (!installPromptDismissed) {
+      setShowInstallPrompt(true);
+    }
+  }, [setSettings, setEntries, setHasOnboarded, installPromptDismissed]);
 
   const handleDayClick = useCallback((date: Date) => {
     const dayData = cycle.getDayData(date);
@@ -213,6 +220,7 @@ function App() {
                 onClearData={handleClearData}
                 notificationPermission={notifications.permission}
                 onRequestNotificationPermission={notifications.requestPermission}
+                onShowInstallGuide={() => setShowInstallPrompt(true)}
               />
             )}
           </motion.div>
@@ -239,6 +247,15 @@ function App() {
         onSave={handleSaveEntry}
         editEntry={editingEntry}
         onDelete={handleDeleteEntry}
+      />
+
+      {/* Install PWA Prompt */}
+      <InstallPrompt
+        isOpen={showInstallPrompt}
+        onClose={() => {
+          setShowInstallPrompt(false);
+          setInstallPromptDismissed(true);
+        }}
       />
     </div>
   );

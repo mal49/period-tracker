@@ -13,11 +13,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar,
-  Smartphone,
-  Share,
-  MoreVertical,
-  Plus,
-  Download,
   Sun,
   Moon,
 } from 'lucide-react';
@@ -30,7 +25,7 @@ interface OnboardingProps {
   onComplete: (settings: UserSettings, firstEntry?: CycleEntry) => void;
 }
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 7;
 
 export function Onboarding({ onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0);
@@ -164,8 +159,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
                 onDateChange={setLastPeriodStart}
               />
             )}
-            {step === 6 && <StepInstallApp />}
-            {step === 7 && <StepAllSet userName={userName} />}
+            {step === 6 && <StepAllSet userName={userName} />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -570,122 +564,6 @@ function StepLastPeriod({
           No worries! You can log it later from the home screen~
         </p>
       )}
-    </div>
-  );
-}
-
-function StepInstallApp() {
-  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
-
-  const androidSteps = [
-    {
-      icon: MoreVertical,
-      text: 'Open Chrome and tap the three-dot menu (⋮) at the top right',
-    },
-    {
-      icon: Download,
-      text: 'Tap "Add to Home screen" or "Install app"',
-    },
-    {
-      icon: Check,
-      text: 'Tap "Add" to confirm — Wawa will appear on your home screen!',
-    },
-  ];
-
-  const iosSteps = [
-    {
-      icon: Share,
-      text: 'Open Safari and tap the Share button at the bottom',
-    },
-    {
-      icon: Plus,
-      text: 'Scroll down and tap "Add to Home Screen"',
-    },
-    {
-      icon: Check,
-      text: 'Tap "Add" in the top right — Wawa will appear on your home screen!',
-    },
-  ];
-
-  const steps = platform === 'android' ? androidSteps : iosSteps;
-
-  return (
-    <div className="text-center max-w-xs mx-auto">
-      <motion.div
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
-      >
-        <Mascot size="lg" mood="happy" className="mx-auto mb-4" />
-      </motion.div>
-      <h2 className="text-xl font-extrabold text-foreground mb-1">
-        Install Wawa on Your Phone
-      </h2>
-      <p className="text-sm text-muted-foreground mb-6 font-medium">
-        Add Wawa to your home screen for quick access — just like a real app!
-      </p>
-
-      {/* Platform toggle */}
-      <div className="flex gap-2 mb-6 bg-card card-soft rounded-2xl p-1.5">
-        <button
-          onClick={() => setPlatform('android')}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all ${
-            platform === 'android'
-              ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Smartphone className="size-4" />
-          Android
-        </button>
-        <button
-          onClick={() => setPlatform('ios')}
-          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all ${
-            platform === 'ios'
-              ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
-              : 'text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          <Smartphone className="size-4" />
-          iOS
-        </button>
-      </div>
-
-      {/* Steps */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={platform}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.2 }}
-          className="grid gap-2.5"
-        >
-          {steps.map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.05 + i * 0.1 }}
-              className="flex items-center gap-3 text-left rounded-2xl bg-card card-soft p-3.5"
-            >
-              <div className="size-9 rounded-xl bg-[var(--blush)] dark:bg-primary/15 flex items-center justify-center shrink-0 relative">
-                <span className="absolute -top-1 -left-1 size-5 rounded-full bg-primary text-primary-foreground text-[10px] font-extrabold flex items-center justify-center">
-                  {i + 1}
-                </span>
-                <item.icon className="size-4 text-primary" />
-              </div>
-              <span className="text-sm text-foreground font-semibold leading-snug">
-                {item.text}
-              </span>
-            </motion.div>
-          ))}
-        </motion.div>
-      </AnimatePresence>
-
-      <p className="text-xs text-muted-foreground mt-5 font-medium">
-        You can skip this for now and do it later~
-      </p>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Bell, Moon, Sun, Trash2, Download, Upload, Info, Heart, User } from 'lucide-react';
+import { Bell, Moon, Sun, Trash2, Download, Upload, Info, Heart, User, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserSettings, CycleEntry } from '@/types';
 import { useState, useRef } from 'react';
@@ -13,6 +13,7 @@ interface SettingsProps {
   onClearData: () => void;
   notificationPermission: NotificationPermission;
   onRequestNotificationPermission: () => void;
+  onShowInstallGuide: () => void;
 }
 
 export function Settings({
@@ -23,6 +24,7 @@ export function Settings({
   onClearData,
   notificationPermission,
   onRequestNotificationPermission,
+  onShowInstallGuide,
 }: SettingsProps) {
   const [isDark, setIsDark] = useState(document.documentElement.classList.contains('dark'));
   const [showConfirmClear, setShowConfirmClear] = useState(false);
@@ -196,6 +198,29 @@ export function Settings({
             <span className="text-sm font-medium text-foreground">Dark mode</span>
           </div>
           <ToggleSwitch enabled={isDark} onChange={toggleTheme} />
+        </div>
+      </motion.div>
+
+      {/* Install App */}
+      <motion.div variants={itemVariants} className="bg-card rounded-2xl p-4 card-soft">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="size-8 rounded-xl bg-[var(--blush)] dark:bg-primary/15 flex items-center justify-center">
+              <Smartphone className="size-4 text-primary" />
+            </div>
+            <div>
+              <span className="text-sm font-medium text-foreground block">Install app</span>
+              <span className="text-xs text-muted-foreground">Add Wawa to your home screen</span>
+            </div>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={onShowInstallGuide}
+            className="rounded-xl font-bold text-xs"
+          >
+            Show Guide
+          </Button>
         </div>
       </motion.div>
 
