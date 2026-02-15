@@ -20,6 +20,9 @@ dist-ssr
 server/.wrangler
 server/dist
 
+# Deployment guide (local reference only)
+DEPLOY_GUIDE.txt
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
