@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS push_schedules (
   p256dh TEXT NOT NULL,
   auth TEXT NOT NULL,
   notify_at INTEGER NOT NULL,
-  title TEXT DEFAULT 'Wawa Reminder',
+  title TEXT DEFAULT 'HerDay Reminder',
   body TEXT DEFAULT 'Time to check your cycle!',
   created_at INTEGER DEFAULT (unixepoch())
 );

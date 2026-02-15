@@ -15,7 +15,7 @@ const sizes = {
 };
 
 /**
- * Wawa mascot — a cute round blob character in soft pastels.
+ * Awa mascot — a cute round blob character in soft pastels.
  * Simple, warm, and friendly.
  */
 export function Mascot({ size = 'md', mood = 'happy', className = '', animate = true }: MascotProps) {

@@ -1,4 +1,4 @@
-# Wawa Period Tracker
+# HerDay Menstrual Tracker
 
 A beautiful, private, and offline-capable menstrual cycle tracker built as a Progressive Web App. All your data stays on your device — no accounts, no servers, no tracking.
 
@@ -14,11 +14,11 @@ A beautiful, private, and offline-capable menstrual cycle tracker built as a Pro
 - **Data Import/Export** — Back up and restore your data as JSON
 - **Onboarding** — Guided first-time setup to configure your cycle defaults
 - **Installable PWA** — Install on your home screen and use offline, just like a native app
-- **Cute Mascot** — Meet Wawa, your friendly cycle companion
+- **Cute Mascot** — Meet Awa, your friendly cycle companion
 
 ## Privacy
 
-Wawa is 100% client-side. All data is stored in your browser's `localStorage`. Nothing is ever sent to a server.
+HerDay is 100% client-side. All data is stored in your browser's `localStorage`. Nothing is ever sent to a server.
 
 ## Tech Stack
 
@@ -81,7 +81,7 @@ src/
 │   ├── Dashboard.tsx      # Home screen with cycle overview
 │   ├── History.tsx        # Past entries list
 │   ├── LogPeriod.tsx      # Period logging sheet
-│   ├── Mascot.tsx         # Wawa mascot component
+│   ├── Mascot.tsx         # Awa mascot component
 │   ├── Onboarding.tsx     # First-time setup flow
 │   └── Settings.tsx       # App settings and data management
 ├── hooks/

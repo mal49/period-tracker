@@ -48,15 +48,15 @@ self.addEventListener('push', (event) => {
   try {
     data = event.data.json();
   } catch {
-    data = { title: 'Wawa Reminder', body: event.data.text() };
+    data = { title: 'HerDay Reminder', body: event.data.text() };
   }
 
-  const title = data.title || 'Wawa Reminder';
-  const options: NotificationOptions = {
+  const title = data.title || 'HerDay Reminder';
+  const options: NotificationOptions & { renotify?: boolean } = {
     body: data.body || 'Time to check your cycle!',
     icon: '/icon-192x192.png',
     badge: '/icon-192x192.png',
-    tag: 'wawa-period-reminder',
+    tag: 'herday-period-reminder',
     renotify: true,
     data: { url: data.url || '/' },
   };

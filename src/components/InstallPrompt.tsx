@@ -31,7 +31,7 @@ export function InstallPrompt({ isOpen, onClose }: InstallPromptProps) {
     },
     {
       icon: Check,
-      text: 'Tap "Add" to confirm — Wawa will appear on your home screen!',
+      text: 'Tap "Add" to confirm — HerDay will appear on your home screen!',
     },
   ];
 
@@ -46,7 +46,7 @@ export function InstallPrompt({ isOpen, onClose }: InstallPromptProps) {
     },
     {
       icon: Check,
-      text: 'Tap "Add" in the top right — Wawa will appear on your home screen!',
+      text: 'Tap "Add" in the top right — HerDay will appear on your home screen!',
     },
   ];
 
@@ -92,7 +92,7 @@ export function InstallPrompt({ isOpen, onClose }: InstallPromptProps) {
               <div className="text-center mb-5">
                 <Mascot size="md" mood="happy" className="mx-auto mb-3" />
                 <h2 className="text-lg font-extrabold text-foreground mb-1">
-                  Install Wawa on Your Phone
+                  Install HerDay on Your Phone
                 </h2>
                 <p className="text-sm text-muted-foreground font-medium">
                   Add to your home screen for quick access — just like a real app!

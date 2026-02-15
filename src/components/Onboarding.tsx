@@ -231,10 +231,10 @@ function StepWelcome() {
         <Mascot size="xl" mood="excited" className="mx-auto mb-4" />
       </motion.div>
       <h1 className="text-2xl font-extrabold text-foreground mb-2">
-        Welcome to Wawa!
+        Welcome to HerDay!
       </h1>
       <p className="text-muted-foreground leading-relaxed font-medium">
-        Your cute and private period tracker. Let's set things up — it only takes
+        Your cute and private menstrual tracker. Let's set things up — it only takes
         a minute~
       </p>
 
@@ -293,7 +293,7 @@ function StepInstall() {
     },
     {
       icon: Check,
-      text: 'Tap "Add" to confirm — then open Wawa from your home screen!',
+      text: 'Tap "Add" to confirm — then open HerDay from your home screen!',
     },
   ];
 
@@ -308,7 +308,7 @@ function StepInstall() {
     },
     {
       icon: Check,
-      text: 'Tap "Add" in the top right — then open Wawa from your home screen!',
+      text: 'Tap "Add" in the top right — then open HerDay from your home screen!',
     },
   ];
 
@@ -324,10 +324,10 @@ function StepInstall() {
         <Mascot size="lg" mood="happy" className="mx-auto mb-4" />
       </motion.div>
       <h2 className="text-xl font-extrabold text-foreground mb-1">
-        Install Wawa First!
+        Install HerDay First!
       </h2>
       <p className="text-sm text-muted-foreground mb-6 font-medium">
-        Add Wawa to your home screen for the best experience.
+        Add HerDay to your home screen for the best experience.
         After installing, open it from there to continue setup~
       </p>
 
@@ -416,7 +416,7 @@ function StepName({
         What's your name?
       </h2>
       <p className="text-sm text-muted-foreground mb-8 font-medium">
-        So Wawa can greet you properly~
+        So Awa can greet you properly~
       </p>
 
       <div className="relative max-w-[260px] mx-auto">
@@ -465,7 +465,7 @@ function StepTheme() {
         Pick Your Vibe
       </h2>
       <p className="text-sm text-muted-foreground mb-8 font-medium">
-        Choose how you'd like Wawa to look~
+        Choose how you'd like HerDay to look~
       </p>
 
       <div className="grid grid-cols-2 gap-3">
@@ -731,7 +731,7 @@ function StepAllSet({ userName }: { userName: string }) {
         transition={{ delay: 0.4 }}
         className="text-muted-foreground leading-relaxed font-medium"
       >
-        Wawa is ready to help you track your cycle. All your data stays
+        Awa is ready to help you track your cycle. All your data stays
         private on your device~
       </motion.p>
 

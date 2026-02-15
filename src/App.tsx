@@ -156,7 +156,7 @@ function App() {
             <Mascot size="sm" mood="happy" animate={false} />
             <div>
               <h1 className="text-lg font-extrabold text-foreground leading-tight">
-                {settings.userName ? `Welcome, ${settings.userName}` : 'Wawa'}
+                {settings.userName ? `Welcome, ${settings.userName}` : 'HerDay'}
               </h1>
               <p className="text-[10px] font-semibold text-muted-foreground -mt-0.5">{PAGE_TITLES[currentPage]}</p>
             </div>

@@ -505,7 +505,7 @@ export function Dashboard({
           className="text-center py-8 px-4"
         >
           <Mascot size="xl" mood="excited" className="mx-auto mb-4" />
-          <h3 className="text-lg font-bold text-foreground mb-1">Welcome to Wawa!</h3>
+          <h3 className="text-lg font-bold text-foreground mb-1">Welcome to HerDay!</h3>
           <p className="text-sm text-muted-foreground leading-relaxed">
             Start by logging your period using the + button below. Your data stays private on your device~
           </p>

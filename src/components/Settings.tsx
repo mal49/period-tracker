@@ -210,7 +210,7 @@ export function Settings({
             </div>
             <div>
               <span className="text-sm font-medium text-foreground block">Install app</span>
-              <span className="text-xs text-muted-foreground">Add Wawa to your home screen</span>
+              <span className="text-xs text-muted-foreground">Add HerDay to your home screen</span>
             </div>
           </div>
           <Button
@@ -291,7 +291,7 @@ export function Settings({
       <motion.div variants={itemVariants} className="flex flex-col items-center py-6 space-y-3">
         <Mascot size="sm" mood="love" />
         <div className="text-center space-y-0.5">
-          <p className="text-xs font-bold text-muted-foreground">Wawa Period Tracker v1.0</p>
+          <p className="text-xs font-bold text-muted-foreground">HerDay Menstrual Tracker v1.0</p>
           <p className="text-xs text-muted-foreground flex items-center gap-1 justify-center">
             Made with <Heart className="size-3 text-primary fill-primary" /> Your privacy matters.
           </p>

@@ -16,8 +16,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192x192.png', 'icon-512x512.png', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Period Tracker',
-        short_name: 'wawa',
+        name: 'HerDay',
+        short_name: 'HerDay',
         description: 'A beautiful and private menstrual cycle tracker',
         theme_color: '#F2A5BE',
         background_color: '#FFF7F2',

@@ -102,7 +102,7 @@ app.post("/api/schedule", async (c) => {
       subscription.keys.p256dh,
       subscription.keys.auth,
       notifyAtUnix,
-      title || "Wawa Reminder",
+      title || "HerDay Reminder",
       body || "Time to check your cycle!"
     )
     .run();
