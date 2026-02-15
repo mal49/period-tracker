@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, subDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, subMonths, isSameDay, isSameMonth, isAfter } from 'date-fns';
 import {
@@ -123,7 +123,7 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-center px-6 overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center px-6 overflow-y-auto overflow-x-hidden">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={step}
@@ -162,8 +162,8 @@ export function Onboarding({ onComplete }: OnboardingProps) {
       </div>
 
       {/* Navigation */}
-      <div className="px-6 pb-8 safe-area-bottom">
-        <div className="flex items-center gap-3 max-w-sm mx-auto">
+      <div className="px-6 pt-4 safe-area-bottom">
+        <div className="flex items-center gap-3 max-w-sm mx-auto mb-8">
           {step > 0 && (
             <Button
               variant="outline"
@@ -501,27 +501,13 @@ function StepAllSet({ userName }: { userName: string }) {
 function OnboardingMiniCalendar({
   selected,
   onSelect,
-  onClose,
   maxDate,
 }: {
   selected: Date;
   onSelect: (date: Date) => void;
-  onClose: () => void;
   maxDate?: Date;
 }) {
   const [viewMonth, setViewMonth] = useState(startOfMonth(selected));
-  const ref = useRef<HTMLDivElement>(null);
-
-  // Close on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        onClose();
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, [onClose]);
 
   const monthStart = startOfMonth(viewMonth);
   const monthEnd = endOfMonth(viewMonth);
@@ -539,69 +525,69 @@ function OnboardingMiniCalendar({
 
   return (
     <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: -8, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.95 }}
-      transition={{ duration: 0.15 }}
-      className="absolute left-0 right-0 top-full mt-2 z-50 bg-card border rounded-2xl shadow-xl shadow-black/10 p-3"
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      transition={{ duration: 0.2 }}
+      className="overflow-hidden"
     >
-      {/* Month navigation */}
-      <div className="flex items-center justify-between mb-2">
-        <button
-          onClick={() => setViewMonth(subMonths(viewMonth, 1))}
-          className="size-7 rounded-lg hover:bg-accent flex items-center justify-center transition-colors"
-        >
-          <ChevronLeft className="size-4 text-muted-foreground" />
-        </button>
-        <span className="text-sm font-bold text-foreground">
-          {format(viewMonth, 'MMMM yyyy')}
-        </span>
-        <button
-          onClick={() => setViewMonth(addMonths(viewMonth, 1))}
-          className="size-7 rounded-lg hover:bg-accent flex items-center justify-center transition-colors"
-        >
-          <ChevronRight className="size-4 text-muted-foreground" />
-        </button>
-      </div>
+      <div className="pt-3">
+        {/* Month navigation */}
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => setViewMonth(subMonths(viewMonth, 1))}
+            className="size-7 rounded-lg hover:bg-accent flex items-center justify-center transition-colors"
+          >
+            <ChevronLeft className="size-4 text-muted-foreground" />
+          </button>
+          <span className="text-sm font-bold text-foreground">
+            {format(viewMonth, 'MMMM yyyy')}
+          </span>
+          <button
+            onClick={() => setViewMonth(addMonths(viewMonth, 1))}
+            className="size-7 rounded-lg hover:bg-accent flex items-center justify-center transition-colors"
+          >
+            <ChevronRight className="size-4 text-muted-foreground" />
+          </button>
+        </div>
 
-      {/* Weekday headers */}
-      <div className="grid grid-cols-7 mb-1">
-        {weekDays.map((wd) => (
-          <div key={wd} className="text-center text-[10px] font-bold text-muted-foreground/60 py-1">
-            {wd}
-          </div>
-        ))}
-      </div>
+        {/* Weekday headers */}
+        <div className="grid grid-cols-7 mb-1">
+          {weekDays.map((wd) => (
+            <div key={wd} className="text-center text-[10px] font-bold text-muted-foreground/60 py-1">
+              {wd}
+            </div>
+          ))}
+        </div>
 
-      {/* Day grid */}
-      <div className="grid grid-cols-7">
-        {days.map((d, i) => {
-          const isCurrentMonth = isSameMonth(d, viewMonth);
-          const isSelected = isSameDay(d, selected);
-          const isToday = isSameDay(d, new Date());
-          const isFuture = maxDate ? isAfter(d, maxDate) : false;
+        {/* Day grid */}
+        <div className="grid grid-cols-7">
+          {days.map((d, i) => {
+            const isCurrentMonth = isSameMonth(d, viewMonth);
+            const isSelected = isSameDay(d, selected);
+            const isToday = isSameDay(d, new Date());
+            const isFuture = maxDate ? isAfter(d, maxDate) : false;
 
-          return (
-            <button
-              key={i}
-              disabled={isFuture}
-              onClick={() => {
-                onSelect(d);
-                onClose();
-              }}
-              className={`size-8 rounded-lg text-xs font-semibold transition-all flex items-center justify-center
-                ${!isCurrentMonth ? 'text-muted-foreground/25' : ''}
-                ${isCurrentMonth && !isSelected && !isFuture ? 'text-foreground hover:bg-accent' : ''}
-                ${isSelected ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20' : ''}
-                ${isToday && !isSelected ? 'ring-1 ring-primary/40' : ''}
-                ${isFuture ? 'text-muted-foreground/20 cursor-not-allowed' : ''}
-              `}
-            >
-              {format(d, 'd')}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={i}
+                disabled={isFuture}
+                onClick={() => {
+                  onSelect(d);
+                }}
+                className={`size-8 rounded-lg text-xs font-semibold transition-all flex items-center justify-center
+                  ${!isCurrentMonth ? 'text-muted-foreground/25' : ''}
+                  ${isCurrentMonth && !isSelected && !isFuture ? 'text-foreground hover:bg-accent' : ''}
+                  ${isSelected ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20' : ''}
+                  ${isToday && !isSelected ? 'ring-1 ring-primary/40' : ''}
+                  ${isFuture ? 'text-muted-foreground/20 cursor-not-allowed' : ''}
+                `}
+              >
+                {format(d, 'd')}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </motion.div>
   );
@@ -622,7 +608,7 @@ function OnboardingDatePicker({
   const selectedDate = new Date(value + 'T00:00:00');
 
   return (
-    <div className="relative">
+    <div>
       <label className="text-xs font-bold text-muted-foreground mb-1.5 block text-left uppercase tracking-wider">
         {label}
       </label>
@@ -642,7 +628,6 @@ function OnboardingDatePicker({
           <OnboardingMiniCalendar
             selected={selectedDate}
             onSelect={(d) => onChange(format(d, 'yyyy-MM-dd'))}
-            onClose={() => setOpen(false)}
             maxDate={maxDate}
           />
         )}
