@@ -13,6 +13,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar,
+  Smartphone,
+  Share,
+  MoreVertical,
+  Plus,
+  Download,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { UserSettings, CycleEntry } from '@/types';
@@ -23,7 +30,7 @@ interface OnboardingProps {
   onComplete: (settings: UserSettings, firstEntry?: CycleEntry) => void;
 }
 
-const TOTAL_STEPS = 6;
+const TOTAL_STEPS = 8;
 
 export function Onboarding({ onComplete }: OnboardingProps) {
   const [step, setStep] = useState(0);
@@ -139,16 +146,17 @@ export function Onboarding({ onComplete }: OnboardingProps) {
             {step === 1 && (
               <StepName value={userName} onChange={setUserName} />
             )}
-            {step === 2 && (
+            {step === 2 && <StepTheme />}
+            {step === 3 && (
               <StepCycleLength value={cycleLength} onChange={setCycleLength} />
             )}
-            {step === 3 && (
+            {step === 4 && (
               <StepPeriodLength
                 value={periodLength}
                 onChange={setPeriodLength}
               />
             )}
-            {step === 4 && (
+            {step === 5 && (
               <StepLastPeriod
                 enabled={logLastPeriod}
                 onToggle={setLogLastPeriod}
@@ -156,7 +164,8 @@ export function Onboarding({ onComplete }: OnboardingProps) {
                 onDateChange={setLastPeriodStart}
               />
             )}
-            {step === 5 && <StepAllSet userName={userName} />}
+            {step === 6 && <StepInstallApp />}
+            {step === 7 && <StepAllSet userName={userName} />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -300,6 +309,130 @@ function StepName({
   );
 }
 
+function StepTheme() {
+  const [isDark, setIsDark] = useState(
+    document.documentElement.classList.contains('dark')
+  );
+
+  const applyTheme = (dark: boolean) => {
+    setIsDark(dark);
+    document.documentElement.classList.toggle('dark', dark);
+    localStorage.setItem('wawa-theme', dark ? 'dark' : 'light');
+  };
+
+  return (
+    <div className="text-center max-w-xs mx-auto">
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+      >
+        <Mascot size="lg" mood="happy" className="mx-auto mb-4" />
+      </motion.div>
+      <h2 className="text-xl font-extrabold text-foreground mb-1">
+        Pick Your Vibe
+      </h2>
+      <p className="text-sm text-muted-foreground mb-8 font-medium">
+        Choose how you'd like Wawa to look~
+      </p>
+
+      <div className="grid grid-cols-2 gap-3">
+        {/* Light mode card */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          onClick={() => applyTheme(false)}
+          className={`relative flex flex-col items-center gap-3 rounded-2xl border-2 p-5 transition-all ${
+            !isDark
+              ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
+              : 'border-border bg-card hover:border-primary/30'
+          }`}
+        >
+          {!isDark && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-2 -right-2 size-6 rounded-full bg-primary flex items-center justify-center"
+            >
+              <Check className="size-3.5 text-primary-foreground" />
+            </motion.div>
+          )}
+          <div
+            className={`size-14 rounded-2xl flex items-center justify-center ${
+              !isDark
+                ? 'bg-amber-100 dark:bg-amber-900/30'
+                : 'bg-amber-50 dark:bg-muted'
+            }`}
+          >
+            <Sun
+              className={`size-7 ${
+                !isDark ? 'text-amber-500' : 'text-amber-400'
+              }`}
+            />
+          </div>
+          <div>
+            <span className="text-sm font-bold text-foreground block">
+              Light
+            </span>
+            <span className="text-[11px] text-muted-foreground font-medium">
+              Bright & cheerful
+            </span>
+          </div>
+        </motion.button>
+
+        {/* Dark mode card */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          onClick={() => applyTheme(true)}
+          className={`relative flex flex-col items-center gap-3 rounded-2xl border-2 p-5 transition-all ${
+            isDark
+              ? 'border-primary bg-primary/5 shadow-md shadow-primary/10'
+              : 'border-border bg-card hover:border-primary/30'
+          }`}
+        >
+          {isDark && (
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-2 -right-2 size-6 rounded-full bg-primary flex items-center justify-center"
+            >
+              <Check className="size-3.5 text-primary-foreground" />
+            </motion.div>
+          )}
+          <div
+            className={`size-14 rounded-2xl flex items-center justify-center ${
+              isDark
+                ? 'bg-violet-100 dark:bg-violet-900/30'
+                : 'bg-violet-50 dark:bg-muted'
+            }`}
+          >
+            <Moon
+              className={`size-7 ${
+                isDark ? 'text-violet-500' : 'text-violet-400'
+              }`}
+            />
+          </div>
+          <div>
+            <span className="text-sm font-bold text-foreground block">
+              Dark
+            </span>
+            <span className="text-[11px] text-muted-foreground font-medium">
+              Easy on the eyes
+            </span>
+          </div>
+        </motion.button>
+      </div>
+
+      <p className="text-xs text-muted-foreground mt-6 font-medium">
+        You can always change this later in Settings~
+      </p>
+    </div>
+  );
+}
+
 function StepCycleLength({
   value,
   onChange,
@@ -437,6 +570,122 @@ function StepLastPeriod({
           No worries! You can log it later from the home screen~
         </p>
       )}
+    </div>
+  );
+}
+
+function StepInstallApp() {
+  const [platform, setPlatform] = useState<'android' | 'ios'>('android');
+
+  const androidSteps = [
+    {
+      icon: MoreVertical,
+      text: 'Open Chrome and tap the three-dot menu (⋮) at the top right',
+    },
+    {
+      icon: Download,
+      text: 'Tap "Add to Home screen" or "Install app"',
+    },
+    {
+      icon: Check,
+      text: 'Tap "Add" to confirm — Wawa will appear on your home screen!',
+    },
+  ];
+
+  const iosSteps = [
+    {
+      icon: Share,
+      text: 'Open Safari and tap the Share button at the bottom',
+    },
+    {
+      icon: Plus,
+      text: 'Scroll down and tap "Add to Home Screen"',
+    },
+    {
+      icon: Check,
+      text: 'Tap "Add" in the top right — Wawa will appear on your home screen!',
+    },
+  ];
+
+  const steps = platform === 'android' ? androidSteps : iosSteps;
+
+  return (
+    <div className="text-center max-w-xs mx-auto">
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+      >
+        <Mascot size="lg" mood="happy" className="mx-auto mb-4" />
+      </motion.div>
+      <h2 className="text-xl font-extrabold text-foreground mb-1">
+        Install Wawa on Your Phone
+      </h2>
+      <p className="text-sm text-muted-foreground mb-6 font-medium">
+        Add Wawa to your home screen for quick access — just like a real app!
+      </p>
+
+      {/* Platform toggle */}
+      <div className="flex gap-2 mb-6 bg-card card-soft rounded-2xl p-1.5">
+        <button
+          onClick={() => setPlatform('android')}
+          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all ${
+            platform === 'android'
+              ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Smartphone className="size-4" />
+          Android
+        </button>
+        <button
+          onClick={() => setPlatform('ios')}
+          className={`flex-1 flex items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-bold transition-all ${
+            platform === 'ios'
+              ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/20'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Smartphone className="size-4" />
+          iOS
+        </button>
+      </div>
+
+      {/* Steps */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={platform}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="grid gap-2.5"
+        >
+          {steps.map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.05 + i * 0.1 }}
+              className="flex items-center gap-3 text-left rounded-2xl bg-card card-soft p-3.5"
+            >
+              <div className="size-9 rounded-xl bg-[var(--blush)] dark:bg-primary/15 flex items-center justify-center shrink-0 relative">
+                <span className="absolute -top-1 -left-1 size-5 rounded-full bg-primary text-primary-foreground text-[10px] font-extrabold flex items-center justify-center">
+                  {i + 1}
+                </span>
+                <item.icon className="size-4 text-primary" />
+              </div>
+              <span className="text-sm text-foreground font-semibold leading-snug">
+                {item.text}
+              </span>
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatePresence>
+
+      <p className="text-xs text-muted-foreground mt-5 font-medium">
+        You can skip this for now and do it later~
+      </p>
     </div>
   );
 }
