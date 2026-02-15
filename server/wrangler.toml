@@ -21,4 +21,4 @@ crons = ["* * * * *"]
 [vars]
 VAPID_PUBLIC_KEY = "BGn-3R_P5Ot3pXznxldkqhtpuIzQ8SktUaV32KpkSYLDn_aSNdKOuLMkB62QwbjGtNjyRHe5m8vMIS-HXmTw_og"
 VAPID_EMAIL = "mailto:scemer999@gmail.com"
-ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:4173"
+ALLOWED_ORIGINS = "http://localhost:5173,http://localhost:4173,https://wawa-period-tracker.pages.dev"
