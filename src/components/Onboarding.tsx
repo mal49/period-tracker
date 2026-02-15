@@ -1,0 +1,490 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { format, subDays } from 'date-fns';
+import {
+  ArrowRight,
+  ArrowLeft,
+  CalendarDays,
+  Heart,
+  Shield,
+  Sparkles,
+  Check,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import type { UserSettings, CycleEntry } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
+import { Mascot } from '@/components/Mascot';
+
+interface OnboardingProps {
+  onComplete: (settings: UserSettings, firstEntry?: CycleEntry) => void;
+}
+
+const TOTAL_STEPS = 5;
+
+export function Onboarding({ onComplete }: OnboardingProps) {
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
+
+  // Settings
+  const [cycleLength, setCycleLength] = useState(28);
+  const [periodLength, setPeriodLength] = useState(5);
+
+  // Optional first period log
+  const [logLastPeriod, setLogLastPeriod] = useState(false);
+  const [lastPeriodStart, setLastPeriodStart] = useState(
+    format(subDays(new Date(), 14), 'yyyy-MM-dd')
+  );
+
+  const goNext = () => {
+    setDirection(1);
+    setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1));
+  };
+
+  const goBack = () => {
+    setDirection(-1);
+    setStep((s) => Math.max(s - 1, 0));
+  };
+
+  const handleFinish = () => {
+    const settings: UserSettings = {
+      averageCycleLength: cycleLength,
+      averagePeriodLength: periodLength,
+      notificationsEnabled: false,
+      reminderDaysBefore: 2,
+      lutealPhaseLength: 14,
+    };
+
+    let firstEntry: CycleEntry | undefined;
+    if (logLastPeriod && lastPeriodStart) {
+      const endDate = format(
+        subDays(
+          new Date(
+            new Date(lastPeriodStart).getTime() +
+              periodLength * 24 * 60 * 60 * 1000
+          ),
+          1
+        ),
+        'yyyy-MM-dd'
+      );
+      firstEntry = {
+        id: uuidv4(),
+        startDate: lastPeriodStart,
+        endDate,
+        flowIntensity: 'medium',
+        symptoms: [],
+        mood: [],
+        notes: '',
+      };
+    }
+
+    onComplete(settings, firstEntry);
+  };
+
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? 80 : -80,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir: number) => ({
+      x: dir < 0 ? 80 : -80,
+      opacity: 0,
+    }),
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-background flex flex-col">
+      {/* Progress bar */}
+      <div className="safe-area-top px-6 pt-6">
+        <div className="flex gap-2">
+          {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+            <div
+              key={i}
+              className="h-1.5 rounded-full flex-1 bg-border overflow-hidden"
+            >
+              <motion.div
+                className="h-full rounded-full bg-primary"
+                initial={{ width: '0%' }}
+                animate={{ width: i <= step ? '100%' : '0%' }}
+                transition={{ duration: 0.4, ease: 'easeInOut' }}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 flex flex-col justify-center px-6 overflow-hidden">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={step}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="flex flex-col items-center"
+          >
+            {step === 0 && <StepWelcome />}
+            {step === 1 && (
+              <StepCycleLength value={cycleLength} onChange={setCycleLength} />
+            )}
+            {step === 2 && (
+              <StepPeriodLength
+                value={periodLength}
+                onChange={setPeriodLength}
+              />
+            )}
+            {step === 3 && (
+              <StepLastPeriod
+                enabled={logLastPeriod}
+                onToggle={setLogLastPeriod}
+                date={lastPeriodStart}
+                onDateChange={setLastPeriodStart}
+              />
+            )}
+            {step === 4 && <StepAllSet />}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation */}
+      <div className="px-6 pb-8 safe-area-bottom">
+        <div className="flex items-center gap-3 max-w-sm mx-auto">
+          {step > 0 && (
+            <Button
+              variant="outline"
+              size="lg"
+              className="rounded-2xl h-13 px-5 font-bold"
+              onClick={goBack}
+            >
+              <ArrowLeft className="size-4" />
+            </Button>
+          )}
+          <Button
+            size="lg"
+            className="flex-1 rounded-2xl h-13 text-base font-bold gap-2 shadow-md shadow-primary/20"
+            onClick={step === TOTAL_STEPS - 1 ? handleFinish : goNext}
+          >
+            {step === 0 && 'Get Started'}
+            {step > 0 && step < TOTAL_STEPS - 1 && 'Continue'}
+            {step === TOTAL_STEPS - 1 && "Let's Go!"}
+            {step < TOTAL_STEPS - 1 ? (
+              <ArrowRight className="size-4" />
+            ) : (
+              <Sparkles className="size-4" />
+            )}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Step Components ────────────────────────────────────────── */
+
+function StepWelcome() {
+  return (
+    <div className="text-center max-w-xs mx-auto">
+      <motion.div
+        initial={{ scale: 0.5, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 200 }}
+      >
+        <Mascot size="xl" mood="excited" className="mx-auto mb-4" />
+      </motion.div>
+      <h1 className="text-2xl font-extrabold text-foreground mb-2">
+        Welcome to Wawa!
+      </h1>
+      <p className="text-muted-foreground leading-relaxed font-medium">
+        Your cute and private period tracker. Let's set things up — it only takes
+        a minute~
+      </p>
+
+      <div className="mt-8 grid gap-3 text-left">
+        {[
+          {
+            icon: CalendarDays,
+            text: 'Track your cycle & predictions',
+            bg: 'bg-[var(--blush)] dark:bg-primary/15',
+            iconColor: 'text-primary',
+          },
+          {
+            icon: Heart,
+            text: 'Log symptoms, mood & flow',
+            bg: 'bg-[var(--mint)] dark:bg-emerald-900/30',
+            iconColor: 'text-emerald-500',
+          },
+          {
+            icon: Shield,
+            text: '100% private — data stays on device',
+            bg: 'bg-[var(--lavender)] dark:bg-violet-900/30',
+            iconColor: 'text-violet-500',
+          },
+        ].map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 + i * 0.1 }}
+            className="flex items-center gap-3 rounded-2xl bg-card card-soft p-3.5"
+          >
+            <div className={`size-10 rounded-xl ${item.bg} flex items-center justify-center shrink-0`}>
+              <item.icon className={`size-5 ${item.iconColor}`} />
+            </div>
+            <span className="text-sm text-foreground font-semibold">
+              {item.text}
+            </span>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function StepCycleLength({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="text-center max-w-xs mx-auto">
+      <Mascot size="lg" mood="happy" className="mx-auto mb-4" />
+      <h2 className="text-xl font-extrabold text-foreground mb-1">
+        Cycle Length
+      </h2>
+      <p className="text-sm text-muted-foreground mb-8 font-medium">
+        How many days is your average cycle? Don't worry, you can change this
+        later~
+      </p>
+
+      <NumberStepper
+        value={value}
+        onChange={onChange}
+        min={20}
+        max={45}
+        unit="days"
+      />
+
+      <p className="text-xs text-muted-foreground mt-4 font-medium">
+        Most cycles are between 24–35 days. The average is 28 days.
+      </p>
+    </div>
+  );
+}
+
+function StepPeriodLength({
+  value,
+  onChange,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <div className="text-center max-w-xs mx-auto">
+      <Mascot size="lg" mood="sleepy" className="mx-auto mb-4" />
+      <h2 className="text-xl font-extrabold text-foreground mb-1">
+        Period Length
+      </h2>
+      <p className="text-sm text-muted-foreground mb-8 font-medium">
+        How many days does your period usually last?
+      </p>
+
+      <NumberStepper
+        value={value}
+        onChange={onChange}
+        min={2}
+        max={10}
+        unit="days"
+      />
+
+      <p className="text-xs text-muted-foreground mt-4 font-medium">
+        Most periods last between 3–7 days. The average is 5 days.
+      </p>
+    </div>
+  );
+}
+
+function StepLastPeriod({
+  enabled,
+  onToggle,
+  date,
+  onDateChange,
+}: {
+  enabled: boolean;
+  onToggle: (v: boolean) => void;
+  date: string;
+  onDateChange: (v: string) => void;
+}) {
+  return (
+    <div className="text-center max-w-xs mx-auto">
+      <Mascot size="lg" mood="wink" className="mx-auto mb-4" />
+      <h2 className="text-xl font-extrabold text-foreground mb-1">
+        Last Period
+      </h2>
+      <p className="text-sm text-muted-foreground mb-6 font-medium">
+        When did your last period start? This helps me predict your next one~
+      </p>
+
+      {/* Toggle */}
+      <button
+        onClick={() => onToggle(!enabled)}
+        className={`w-full flex items-center justify-between rounded-2xl border-2 p-4 transition-all ${
+          enabled
+            ? 'border-primary bg-[var(--blush)] dark:bg-primary/10'
+            : 'border-border bg-card'
+        }`}
+      >
+        <span className="text-sm font-semibold text-foreground">
+          I remember when it started
+        </span>
+        <div
+          className={`w-12 h-7 rounded-full transition-colors relative ${
+            enabled ? 'bg-primary' : 'bg-border'
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0 size-6 rounded-full bg-white shadow-sm transition-transform ${
+              enabled ? 'translate-x-[22px]' : 'translate-x-[2px]'
+            }`}
+          />
+        </div>
+      </button>
+
+      <AnimatePresence>
+        {enabled && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <div className="mt-4 rounded-2xl bg-card card-soft p-4">
+              <label className="text-xs font-bold text-muted-foreground mb-2 block text-left uppercase tracking-wider">
+                Start date of last period
+              </label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => onDateChange(e.target.value)}
+                max={format(new Date(), 'yyyy-MM-dd')}
+                className="w-full rounded-xl border bg-background px-4 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {!enabled && (
+        <p className="text-xs text-muted-foreground mt-4 font-medium">
+          No worries! You can log it later from the home screen~
+        </p>
+      )}
+    </div>
+  );
+}
+
+function StepAllSet() {
+  return (
+    <div className="text-center max-w-xs mx-auto">
+      <motion.div
+        initial={{ scale: 0, rotate: -180 }}
+        animate={{ scale: 1, rotate: 0 }}
+        transition={{ delay: 0.1, type: 'spring', stiffness: 200, damping: 15 }}
+      >
+        <Mascot size="xl" mood="love" className="mx-auto mb-4" />
+      </motion.div>
+      <motion.h2
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="text-2xl font-extrabold text-foreground mb-2"
+      >
+        You're All Set!
+      </motion.h2>
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="text-muted-foreground leading-relaxed font-medium"
+      >
+        Wawa is ready to help you track your cycle. All your data stays
+        private on your device~
+      </motion.p>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mt-8 grid gap-2.5"
+      >
+        {[
+          { text: 'Predictions improve as you log more', icon: Sparkles },
+          { text: 'Tap + anytime to log a period', icon: CalendarDays },
+          { text: 'Check the calendar for overview', icon: Check },
+        ].map((tip, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 text-left text-sm font-medium text-muted-foreground bg-card card-soft rounded-2xl p-3.5"
+          >
+            <div className="size-8 rounded-lg bg-[var(--blush)] dark:bg-primary/15 flex items-center justify-center shrink-0">
+              <tip.icon className="size-4 text-primary" />
+            </div>
+            {tip.text}
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+/* ─── Shared Components ──────────────────────────────────────── */
+
+function NumberStepper({
+  value,
+  onChange,
+  min,
+  max,
+  unit,
+}: {
+  value: number;
+  onChange: (v: number) => void;
+  min: number;
+  max: number;
+  unit: string;
+}) {
+  return (
+    <div className="flex items-center justify-center gap-5">
+      <button
+        onClick={() => onChange(Math.max(min, value - 1))}
+        className="size-14 rounded-2xl bg-card card-soft hover:bg-accent flex items-center justify-center text-lg font-bold transition-colors active:scale-90"
+      >
+        -
+      </button>
+      <div className="w-24 text-center">
+        <motion.span
+          key={value}
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="text-4xl font-extrabold text-foreground block"
+        >
+          {value}
+        </motion.span>
+        <span className="text-sm text-muted-foreground font-semibold">{unit}</span>
+      </div>
+      <button
+        onClick={() => onChange(Math.min(max, value + 1))}
+        className="size-14 rounded-2xl bg-card card-soft hover:bg-accent flex items-center justify-center text-lg font-bold transition-colors active:scale-90"
+      >
+        +
+      </button>
+    </div>
+  );
+}

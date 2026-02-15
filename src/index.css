@@ -1,0 +1,153 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  /* Pastel palette tokens */
+  --color-cream: var(--cream);
+  --color-blush: var(--blush);
+  --color-mint: var(--mint);
+  --color-lavender: var(--lavender);
+  --color-peach: var(--peach);
+  --color-sunny: var(--sunny);
+}
+
+:root {
+  --radius: 1rem;
+  /* ── Pastel color scheme ── */
+  --background: #FFF7F2;
+  --foreground: #5C4448;
+  --card: #FFFFFF;
+  --card-foreground: #5C4448;
+  --popover: #FFFFFF;
+  --popover-foreground: #5C4448;
+  --primary: #F2A5BE;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FFF0EB;
+  --secondary-foreground: #7D5A60;
+  --muted: #FFF3EE;
+  --muted-foreground: #B8969C;
+  --accent: #FFEAE0;
+  --accent-foreground: #7D5A60;
+  --destructive: #F5A0A0;
+  --border: #FAE8E0;
+  --input: #FAE8E0;
+  --ring: #F2A5BE;
+  --chart-1: #F2A5BE;
+  --chart-2: #F5C4D4;
+  --chart-3: #A8E6C3;
+  --chart-4: #C8B8F0;
+  --chart-5: #F5E0A8;
+  --sidebar: #FFF5EE;
+  --sidebar-foreground: #5C4448;
+  --sidebar-primary: #F2A5BE;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #FFF0EB;
+  --sidebar-accent-foreground: #7D5A60;
+  --sidebar-border: #FAE8E0;
+  --sidebar-ring: #F2A5BE;
+  /* Extended pastel palette */
+  --cream: #FFF7F2;
+  --blush: #FFE4EE;
+  --mint: #E0F7EC;
+  --lavender: #EDE4FA;
+  --peach: #FFE8D8;
+  --sunny: #FFF8E0;
+}
+
+.dark {
+  --background: #1C1416;
+  --foreground: #F5E8EA;
+  --card: #261C1F;
+  --card-foreground: #F5E8EA;
+  --popover: #261C1F;
+  --popover-foreground: #F5E8EA;
+  --primary: #F0B0C8;
+  --primary-foreground: #1C1416;
+  --secondary: #302226;
+  --secondary-foreground: #F5E8EA;
+  --muted: #302226;
+  --muted-foreground: #C4A8AE;
+  --accent: #3C2830;
+  --accent-foreground: #F5E8EA;
+  --destructive: #F0A0A0;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: #F0B0C8;
+  --chart-1: #F0B0C8;
+  --chart-2: #F5C4D4;
+  --chart-3: #80C4A0;
+  --chart-4: #A898D4;
+  --chart-5: #E0D090;
+  --sidebar: #261C1F;
+  --sidebar-foreground: #F5E8EA;
+  --sidebar-primary: #F0B0C8;
+  --sidebar-primary-foreground: #F5E8EA;
+  --sidebar-accent: #302226;
+  --sidebar-accent-foreground: #F5E8EA;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #F0B0C8;
+  --cream: #1C1416;
+  --blush: #3C2030;
+  --mint: #1C3026;
+  --lavender: #2C2038;
+  --peach: #30201A;
+  --sunny: #302C1A;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Patrick Hand', 'Comic Sans MS', cursive;
+    font-size: 16px;
+    letter-spacing: 0.01em;
+  }
+  /* Handwritten display font for headings */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Caveat', 'Patrick Hand', cursive;
+    letter-spacing: 0.02em;
+  }
+}
