@@ -52,9 +52,9 @@ export function History({ entries, onEditEntry }: HistoryProps) {
   const avgCycleLength = cycleLengths.length > 0
     ? Math.round(cycleLengths.reduce((a, b) => a + b, 0) / cycleLengths.length)
     : null;
-  const periodLengths = sortedEntries.map(e =>
-    differenceInDays(new Date(e.endDate), new Date(e.startDate)) + 1
-  );
+  const periodLengths = sortedEntries
+    .filter(e => e.endDate)
+    .map(e => differenceInDays(new Date(e.endDate!), new Date(e.startDate)) + 1);
   const avgPeriodLength = periodLengths.length > 0
     ? Math.round(periodLengths.reduce((a, b) => a + b, 0) / periodLengths.length)
     : null;
@@ -91,7 +91,10 @@ export function History({ entries, onEditEntry }: HistoryProps) {
       {/* Entries List */}
       <div className="space-y-2.5">
         {sortedEntries.map((entry, index) => {
-          const periodLength = differenceInDays(new Date(entry.endDate), new Date(entry.startDate)) + 1;
+          const isOngoing = !entry.endDate;
+          const periodLength = entry.endDate
+            ? differenceInDays(new Date(entry.endDate), new Date(entry.startDate)) + 1
+            : differenceInDays(new Date(), new Date(entry.startDate)) + 1;
           const cycleLength = getCycleLength(entry, index);
 
           return (
@@ -106,11 +109,23 @@ export function History({ entries, onEditEntry }: HistoryProps) {
                     <Droplets className="size-5 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-foreground">
-                      {format(new Date(entry.startDate), 'MMM d')} - {format(new Date(entry.endDate), 'MMM d, yyyy')}
-                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-bold text-foreground">
+                        {isOngoing
+                          ? `${format(new Date(entry.startDate), 'MMM d, yyyy')} - now`
+                          : `${format(new Date(entry.startDate), 'MMM d')} - ${format(new Date(entry.endDate!), 'MMM d, yyyy')}`
+                        }
+                      </p>
+                      {isOngoing && (
+                        <span className="px-1.5 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-bold uppercase">
+                          Ongoing
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground font-medium">
-                      <span className="px-2 py-0.5 rounded-lg bg-[var(--cream)] dark:bg-muted">{periodLength} day{periodLength !== 1 ? 's' : ''}</span>
+                      <span className="px-2 py-0.5 rounded-lg bg-[var(--cream)] dark:bg-muted">
+                        {isOngoing ? `${periodLength}d so far` : `${periodLength} day${periodLength !== 1 ? 's' : ''}`}
+                      </span>
                       <span className="px-2 py-0.5 rounded-lg bg-[var(--cream)] dark:bg-muted capitalize">{entry.flowIntensity}</span>
                       {cycleLength && <span className="px-2 py-0.5 rounded-lg bg-[var(--cream)] dark:bg-muted">{cycleLength}d cycle</span>}
                     </div>

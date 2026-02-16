@@ -22,6 +22,9 @@ export function useCycle(entries: CycleEntry[], settings: UserSettings) {
   const getDayData = useCallback((date: Date): DayData => {
     const entry = entries.find(e => {
       const start = new Date(e.startDate);
+      if (!e.endDate) {
+        return isSameDay(date, start) || (date >= start && date <= today);
+      }
       const end = new Date(e.endDate);
       return isWithinInterval(date, { start, end }) || isSameDay(date, start) || isSameDay(date, end);
     });

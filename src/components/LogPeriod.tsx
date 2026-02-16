@@ -211,6 +211,9 @@ export function LogPeriod({ isOpen, onClose, onSave, editEntry, onDelete }: LogP
   const [endDate, setEndDate] = useState(
     editEntry?.endDate || format(new Date(), 'yyyy-MM-dd')
   );
+  const [isOngoing, setIsOngoing] = useState(
+    editEntry ? !editEntry.endDate : false
+  );
   const [flow, setFlow] = useState<CycleEntry['flowIntensity']>(
     editEntry?.flowIntensity || 'medium'
   );
@@ -235,7 +238,7 @@ export function LogPeriod({ isOpen, onClose, onSave, editEntry, onDelete }: LogP
     const entry: CycleEntry = {
       id: editEntry?.id || uuidv4(),
       startDate,
-      endDate,
+      endDate: isOngoing ? undefined : endDate,
       flowIntensity: flow,
       symptoms,
       mood: moods,
@@ -249,6 +252,7 @@ export function LogPeriod({ isOpen, onClose, onSave, editEntry, onDelete }: LogP
     const start = subDays(new Date(), days);
     setStartDate(format(start, 'yyyy-MM-dd'));
     setEndDate(format(new Date(), 'yyyy-MM-dd'));
+    setIsOngoing(false);
   };
 
   return (
@@ -317,19 +321,66 @@ export function LogPeriod({ isOpen, onClose, onSave, editEntry, onDelete }: LogP
               )}
 
               {/* Dates */}
-              <div className="grid grid-cols-2 gap-3 mb-5">
+              <div className={`grid ${isOngoing ? 'grid-cols-1' : 'grid-cols-2'} gap-3 mb-3`}>
                 <DatePickerField
                   label="Start date"
                   value={startDate}
                   onChange={setStartDate}
                   maxDate={new Date()}
                 />
-                <DatePickerField
-                  label="End date"
-                  value={endDate}
-                  onChange={setEndDate}
-                  maxDate={new Date()}
-                />
+                {!isOngoing && (
+                  <DatePickerField
+                    label="End date (optional)"
+                    value={endDate}
+                    onChange={setEndDate}
+                    maxDate={new Date()}
+                  />
+                )}
+              </div>
+
+              {/* Ongoing toggle */}
+              <div className={`rounded-2xl border-2 p-3.5 mb-5 transition-all ${
+                isOngoing
+                  ? 'border-primary bg-[var(--blush)] dark:bg-primary/10'
+                  : 'border-transparent bg-[var(--cream)] dark:bg-muted'
+              }`}>
+                <button
+                  type="button"
+                  onClick={() => setIsOngoing(!isOngoing)}
+                  className="w-full flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`size-8 rounded-xl flex items-center justify-center shrink-0 ${
+                      isOngoing
+                        ? 'bg-primary/15'
+                        : 'bg-background dark:bg-muted-foreground/10'
+                    }`}>
+                      <Droplets className={`size-4 ${isOngoing ? 'text-primary' : 'text-muted-foreground/50'}`} />
+                    </div>
+                    <div className="text-left">
+                      <span className={`text-sm font-bold block ${isOngoing ? 'text-primary' : 'text-foreground'}`}>
+                        Still on my period
+                      </span>
+                      <span className="text-[11px] text-muted-foreground font-medium">
+                        {isOngoing
+                          ? 'You can add the end date later~'
+                          : "Turn on if it hasn't ended yet"
+                        }
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    className={`w-12 h-7 rounded-full transition-colors relative shrink-0 ${
+                      isOngoing ? 'bg-primary' : 'bg-border'
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 size-6 rounded-full bg-white shadow-sm transition-transform ${
+                        isOngoing ? 'left-[22px]' : 'left-[2px]'
+                      }`}
+                    />
+                  </div>
+                </button>
               </div>
 
               {/* Flow Intensity */}

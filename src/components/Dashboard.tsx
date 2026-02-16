@@ -472,7 +472,14 @@ export function Dashboard({
       {/* Last Period Info */}
       {lastEntry && (
         <motion.div variants={itemVariants} className="bg-card rounded-2xl p-4 card-soft">
-          <h3 className="text-sm font-bold text-foreground mb-2">Last Period</h3>
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-bold text-foreground">Last Period</h3>
+            {!lastEntry.endDate && (
+              <span className="px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-bold uppercase tracking-wider">
+                Ongoing
+              </span>
+            )}
+          </div>
           <div className="space-y-1.5">
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground font-medium">Started</span>
@@ -480,7 +487,9 @@ export function Dashboard({
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground font-medium">Ended</span>
-              <span className="font-semibold">{format(new Date(lastEntry.endDate), 'MMM d, yyyy')}</span>
+              <span className="font-semibold">
+                {lastEntry.endDate ? format(new Date(lastEntry.endDate), 'MMM d, yyyy') : 'Still ongoing'}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-muted-foreground font-medium">Flow</span>

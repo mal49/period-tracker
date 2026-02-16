@@ -1,7 +1,7 @@
 export interface CycleEntry {
     id: string;
     startDate: string;
-    endDate: string;
+    endDate?: string;
     flowIntensity: 'light' | 'medium' | 'heavy' | 'spotting';
     symptoms: string[];
     mood: string[];
